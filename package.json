@@ -1,0 +1,24 @@
+{
+  "name": "span-method",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vitest",
+    "coverage": "vitest --coverage",
+    "build": "rollup --config=rollup.config.ts --configPlugin=rollup-plugin-esbuild"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "@vitest/coverage-v8": "^0.34.6",
+    "eslint": "^8.53.0",
+    "fs-extra": "^11.1.1",
+    "rollup": "^4.3.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-esbuild": "^6.1.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.6.3",
+    "vitest": "^0.34.6"
+  }
+}
