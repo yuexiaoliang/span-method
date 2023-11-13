@@ -4,6 +4,9 @@ importers:
 
   .:
     specifiers:
+      '@span-method/core': workspace:*
+      '@span-method/mock': workspace:*
+      '@span-method/utils': workspace:*
       '@types/node': ^20.9.0
       '@vitest/coverage-v8': ^0.34.6
       eslint: ^8.53.0
@@ -16,6 +19,9 @@ importers:
       vite-plugin-dts: ^3.6.3
       vitest: ^0.34.6
     devDependencies:
+      '@span-method/core': link:packages/core
+      '@span-method/mock': link:packages/mock
+      '@span-method/utils': link:packages/utils
       '@types/node': 20.9.0
       '@vitest/coverage-v8': 0.34.6_vitest@0.34.6
       eslint: 8.53.0
