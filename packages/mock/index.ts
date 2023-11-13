@@ -14,6 +14,8 @@ export const data = [
 ];
 
 export type Item = typeof data[number]
+export type Keys = keyof Item
 
 export const findItemById = (id: string) => data.find((item) => item.id === id) as Item
 
+export const findColByKey = (key: Keys) => data.map((item) => item[key])

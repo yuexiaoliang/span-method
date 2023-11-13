@@ -40,3 +40,19 @@ export function isObj(val: any) {
 export function notObj(val: any) {
   return !isObj(val);
 }
+
+export function isArr(val: any) {
+  return getType(val) === 'Array';
+}
+
+export function notArr(val: any) {
+  return !isArr(val);
+}
+
+export function isPrimitive(val: any) {
+  return isStr(val) || isNum(val) || isBool(val);
+}
+
+export function notPrimitive(val: any) {
+  return !isPrimitive(val);
+}
