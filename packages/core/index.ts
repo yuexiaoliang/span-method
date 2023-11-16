@@ -1,7 +1,39 @@
 import { notArr, notObj, notPrimitive } from '@span-method/utils';
 
-export type Row = Record<string, unknown>;
+export type Table = Row[];
+export type TableSpan = ReturnType<typeof calcTableSpan>;
 export type Col = unknown[];
+export type ColSpan = ReturnType<typeof calcColSpan>;
+export type ColsSpan = ReturnType<typeof calcColsSpan>;
+export type Row = Record<string, unknown>;
+export type RowsSpan = ReturnType<typeof calcRowsSpan>;
+export type RowSpan = ReturnType<typeof calcRowSpan>;
+export type CelSpan = [rowSpan: number, colSpan: number];
+
+export const getCellSpanByTableSpan = (tableSpan: TableSpan, rowIndex: number, colIndex: number): CelSpan => {
+  const { rowsSpan, colsSpan } = tableSpan;
+
+  return [rowsSpan[rowIndex][colIndex], colsSpan[colIndex][rowIndex]];
+};
+
+export const calcTableSpan = (table: Table) => {
+  if (notArr(table)) {
+    throw new Error('calcTableSpan: table must be an array');
+  }
+
+  const rowsSpan = calcRowsSpan(table);
+  const colsSpan = calcColsSpan(table);
+
+  return { rowsSpan, colsSpan };
+};
+
+export const calcRowsSpan = (table: Table) => {
+  return table.map(calcColSpan);
+};
+
+export const calcColsSpan = (table: Table) => {
+  return table[0] ? Object.keys(table[0]).map((key) => calcRowSpan(table.map((row) => row[key]))) : [];
+};
 
 // function used for calculating the colSpan of a row
 export const calcColSpan = (row: Row) => {
