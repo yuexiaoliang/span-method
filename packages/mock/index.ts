@@ -13,6 +13,17 @@ export const data = [
   { id: 'ID064', name: 'PE', price: 200, c_price: 200, discount: null, payment: {}, freight: [], city: function () {} }
 ];
 
+export const columns = [
+  { prop: 'id', label: 'ID' },
+  { prop: 'name', label: 'Name' },
+  { prop: 'price', label: 'Price' },
+  { prop: 'c_price', label: 'Current Price' },
+  { prop: 'discount', label: 'Discount' },
+  { prop: 'payment', label: 'Payment' },
+  { prop: 'freight', label: 'Freight' },
+  { prop: 'city', label: 'City' }
+];
+
 export type Item = (typeof data)[number];
 
 export type Keys = keyof Item;
@@ -41,4 +52,20 @@ export const createTable = (rowNumber: number, colNumber: number) => {
   }
 
   return table;
+};
+
+export const getColumnsByRow = (row: Item) => {
+  const result = [];
+
+  const keys = Object.keys(row);
+
+  keys.forEach((key) => {
+    const col = columns.find((_) => _.prop === key);
+
+    if (col) {
+      result.push({ prop: key, label: col.label });
+    }
+  });
+
+  return result;
 };

@@ -1,3 +1,6 @@
 {
-  "name": "@span-method/element-plus"
+  "name": "@span-method/element-plus",
+  "dependencies": {
+    "@span-method/core": "workspace:^"
+  }
 }
