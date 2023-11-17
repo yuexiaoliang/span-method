@@ -9,7 +9,7 @@ export function getType(val: any) {
   return Object.prototype.toString.call(val).slice(8, -1);
 }
 
-export function isStr(val: any) {
+export function isStr(val: any): val is string {
   return typeof val === 'string';
 }
 
@@ -33,7 +33,7 @@ export function notBool(val: any) {
   return !isBool(val);
 }
 
-export function isObj(val: any) {
+export function isObj(val: any): val is object {
   return getType(val) === 'Object';
 }
 
@@ -56,3 +56,8 @@ export function isPrimitive(val: any) {
 export function notPrimitive(val: any) {
   return !isPrimitive(val);
 }
+
+// Checks if the value is a primitive and if it is different from the previous value
+export const isDiff = (val: unknown, prev: unknown) => {
+  return notPrimitive(val) || val !== prev;
+};

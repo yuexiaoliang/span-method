@@ -24,11 +24,13 @@ export const columns = [
   { prop: 'city', label: 'City' }
 ];
 
-export type Item = (typeof data)[number];
+export type Data = typeof data;
+export type Row = Data[number];
+export type Columns = typeof columns;
+export type Column = Columns[number];
+export type Keys = keyof Row;
 
-export type Keys = keyof Item;
-
-export const findItemById = (id: string) => data.find((item) => item.id === id) as Item;
+export const findItemById = (id: string) => data.find((item) => item.id === id) as Row;
 
 export const findColByKey = (key: Keys) => data.map((item) => item[key]);
 
@@ -37,7 +39,7 @@ export const createTable = (rowNumber: number, colNumber: number) => {
 
   for (let i = 0; i < rowNumber; i++) {
     const oldRow = data[i] || [];
-    const row = {};
+    const row: Partial<Row> = {};
 
     const keys = Object.keys(oldRow);
 
@@ -54,8 +56,8 @@ export const createTable = (rowNumber: number, colNumber: number) => {
   return table;
 };
 
-export const getColumnsByRow = (row: Item) => {
-  const result = [];
+export const getColumnsByRow = (row: Row) => {
+  const result: Columns = [];
 
   const keys = Object.keys(row);
 

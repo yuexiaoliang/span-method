@@ -1,4 +1,5 @@
-import { notArr, notObj, notPrimitive } from '@span-method/utils';
+import { notArr, notObj, isDiff, isStr, isObj } from '@span-method/utils';
+import { WARNING_MESSAGES } from './constants'
 
 export type Table = Row[];
 export type TableSpan = ReturnType<typeof calcTableSpan>;
@@ -10,6 +11,15 @@ export type RowsSpan = ReturnType<typeof calcRowsSpan>;
 export type RowSpan = ReturnType<typeof calcRowSpan>;
 export type CelSpan = [rowSpan: number, colSpan: number];
 
+type Pattern = string | string[];
+export type Mode = 'row' | 'col' | 'both';
+export interface OptionsInterface {
+  mode?: Mode;
+  include?: Pattern;
+  exclude?: Pattern;
+}
+export type Options = Mode | OptionsInterface;
+
 export const getCellSpanByTableSpan = (tableSpan: TableSpan, rowIndex: number, colIndex: number): CelSpan => {
   const { rowsSpan, colsSpan } = tableSpan;
 
@@ -19,13 +29,41 @@ export const getCellSpanByTableSpan = (tableSpan: TableSpan, rowIndex: number, c
   return [rowSpan, colSpan];
 };
 
-export const calcTableSpan = (table: Table) => {
+export const calcTableSpan = (table: Table, options?: Options) => {
   if (notArr(table)) {
     throw new Error('calcTableSpan: table must be an array');
   }
 
-  const rowsSpan = calcRowsSpan(table);
-  const colsSpan = calcColsSpan(table);
+  let _mode: Mode = 'both';
+  let rowsSpan: RowsSpan = [];
+  let colsSpan: ColsSpan = [];
+
+  if (isStr(options)) {
+    _mode = options;
+  }
+
+  if (isObj(options)) {
+    const { mode } = options;
+    if (mode) _mode = mode;
+  }
+
+  switch (_mode) {
+    case 'row':
+      rowsSpan = calcRowsSpan(table);
+      break;
+
+    case 'col':
+      colsSpan = calcColsSpan(table);
+      break;
+
+    case 'both':
+      rowsSpan = calcRowsSpan(table);
+      colsSpan = calcColsSpan(table);
+      break;
+
+    default:
+      console.warn(WARNING_MESSAGES.MODE_ERROR);
+  }
 
   return { rowsSpan, colsSpan };
 };
@@ -84,9 +122,4 @@ const calcSpan = (arr: unknown[]) => {
   }
 
   return result;
-};
-
-// Checks if the value is a primitive and if it is different from the previous value
-const isDiff = (val: unknown, prev: unknown) => {
-  return notPrimitive(val) || val !== prev;
 };

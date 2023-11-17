@@ -1,6 +1,7 @@
-import { expect, it, describe } from 'vitest';
+import { expect, it, describe, vi } from 'vitest';
 import { findItemById, findColByKey, createTable } from '@span-method/mock';
-import { calcColSpan, calcRowSpan, calcTableSpan, getCellSpanByTableSpan } from './index';
+import { Options, calcColSpan, calcRowSpan, calcTableSpan, getCellSpanByTableSpan } from './index';
+import { WARNING_MESSAGES } from './constants';
 
 describe('Testing calcColSpan.', () => {
   it('normal.', () => {
@@ -45,29 +46,69 @@ describe('Testing calcRowSpan.', () => {
 
   it('the col data field type is incorrect.', () => {
     expect(calcRowSpan(findColByKey('discount'))).toEqual([2, 0, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1]);
-
     expect(calcRowSpan(findColByKey('payment'))).toEqual([1, 1, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1]);
   });
 });
 
 describe('Testing calcTableSpan.', () => {
+  const table = createTable(4, 4);
+  const validRowsSpan = [
+    [1, 1, 1, 1],
+    [1, 3, 0, 0],
+    [1, 3, 0, 0],
+    [1, 1, 2, 0]
+  ];
+
+  const validColsSpan = [
+    [1, 1, 2, 0],
+    [1, 1, 1, 1],
+    [1, 1, 2, 0],
+    [1, 1, 2, 0]
+  ];
+
   it('normal.', () => {
-    const table = createTable(4, 4);
     const { rowsSpan, colsSpan } = calcTableSpan(table);
+    expect(rowsSpan).toEqual(validRowsSpan);
+    expect(colsSpan).toEqual(validColsSpan);
+  });
 
-    expect(rowsSpan).toEqual([
-      [1, 1, 1, 1],
-      [1, 3, 0, 0],
-      [1, 3, 0, 0],
-      [1, 1, 2, 0]
-    ]);
+  ['both', { mode: 'both' }].forEach((option) => {
+    it(`options is ${JSON.stringify(option)}.`, () => {
+      const { rowsSpan, colsSpan } = calcTableSpan(table, option as Options);
+      expect(rowsSpan).toEqual(validRowsSpan);
+      expect(colsSpan).toEqual(validColsSpan);
+    });
+  });
 
-    expect(colsSpan).toEqual([
-      [1, 1, 2, 0],
-      [1, 1, 1, 1],
-      [1, 1, 2, 0],
-      [1, 1, 2, 0]
-    ]);
+  ['row', { mode: 'row' }].forEach((option) => {
+    it(`options is ${JSON.stringify(option)}.`, () => {
+      const { rowsSpan, colsSpan } = calcTableSpan(table, option as Options);
+      expect(rowsSpan).toEqual(validRowsSpan);
+      expect(colsSpan).toEqual([]);
+    });
+  });
+
+  ['col', { mode: 'col' }].forEach((option) => {
+    it(`options is ${JSON.stringify(option)}.`, () => {
+      const { rowsSpan, colsSpan } = calcTableSpan(table, option as Options);
+      expect(rowsSpan).toEqual([]);
+      expect(colsSpan).toEqual(validColsSpan);
+    });
+  });
+
+  ['test', { mode: 'test' }].forEach((option) => {
+    it(`options is ${JSON.stringify(option)}.`, () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn');
+
+      // @ts-ignore
+      const { rowsSpan, colsSpan } = calcTableSpan(table, option);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(WARNING_MESSAGES.MODE_ERROR);
+      consoleWarnSpy.mockRestore();
+
+      expect(rowsSpan).toEqual([]);
+      expect(colsSpan).toEqual([]);
+    });
   });
 
   it('the table data type is incorrect.', () => {
@@ -85,7 +126,6 @@ describe('Testing calcTableSpan.', () => {
 describe('Testing getCellSpanByTableSpan', () => {
   it('normal.', () => {
     const table = createTable(4, 4);
-    console.log(`🚀 > file: index.test.ts:88 > it > table:`, table);
     const tableSpan = calcTableSpan(table);
 
     expect(getCellSpanByTableSpan(tableSpan, 0, 0)).toEqual([1, 1]);

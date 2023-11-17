@@ -2,13 +2,13 @@
 import { createTable, getColumnsByRow } from '@span-method/mock';
 import { ElTable, ElTableColumn } from 'element-plus';
 import defineSpanMethod from '@span-method/element-plus';
-import type { Model } from '@span-method/element-plus';
+import type { Options } from '@span-method/element-plus';
 
-const tableData = createTable(5, 5);
+const tableData = createTable(2, 5);
 
 // @ts-ignore
 const columns = getColumnsByRow(tableData[0]);
-const spanMethod = (model: Model) => defineSpanMethod(tableData, model);
+const spanMethod = (options: Options) => defineSpanMethod(tableData, options);
 </script>
 
 <template>
