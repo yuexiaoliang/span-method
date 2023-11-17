@@ -56,6 +56,36 @@ export const createTable = (rowNumber: number, colNumber: number) => {
   return table;
 };
 
+export const createTableByRange = (range: { rowStart?: number; rowEnd?: number; colStart?: number; colEnd?: number }) => {
+  const { rowStart, rowEnd, colStart, colEnd } = {
+    rowStart: 0,
+    rowEnd: data.length,
+    colStart: 0,
+    colEnd: columns.length,
+    ...range
+  };
+
+  const table = [];
+
+  for (let i = rowStart; i < rowEnd; i++) {
+    const oldRow = data[i] || [];
+    const row: Partial<Row> = {};
+
+    const keys = Object.keys(oldRow);
+
+    for (let j = colStart; j < colEnd; j++) {
+      const key = keys[j];
+
+      // @ts-ignore
+      row[key] = oldRow[key];
+    }
+
+    table.push(row);
+  }
+
+  return table;
+};
+
 export const getColumnsByRow = (row: Row) => {
   const result: Columns = [];
 

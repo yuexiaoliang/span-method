@@ -1,6 +1,8 @@
-import { expect, it, describe, vi } from 'vitest';
+import { expect, it, describe } from 'vitest';
 import { findItemById, findColByKey, createTable } from '@span-method/mock';
-import { Options, calcColSpan, calcRowSpan, calcTableSpan, getCellSpanByTableSpan } from './index';
+import { createConsoleWarnSpy, createAllDataTypesData } from '@span-method/test-utils';
+import { getType } from '@span-method/utils';
+import { Options, calcColSpan, calcRowSpan, calcRowsSpan, calcTableSpan, getCellSpanByTableSpan } from './index';
 import { WARNING_MESSAGES } from './constants';
 
 describe('Testing calcColSpan.', () => {
@@ -8,17 +10,6 @@ describe('Testing calcColSpan.', () => {
     expect(calcColSpan(findItemById('ID384'))).toEqual([1, 1, 2, 0, 1, 1, 1, 1]);
 
     expect(calcColSpan(findItemById('ID023'))).toEqual([1, 1, 1, 4, 0, 0, 0, 1]);
-  });
-
-  it('the row data type is incorrect.', () => {
-    // @ts-ignore
-    expect(() => calcColSpan([])).toThrow('calcColSpan: col must be an object');
-
-    // @ts-ignore
-    expect(() => calcColSpan(null)).toThrow('calcColSpan: col must be an object');
-
-    // @ts-ignore
-    expect(() => calcColSpan(1)).toThrow('calcColSpan: col must be an object');
   });
 
   it('the row data field type is incorrect.', () => {
@@ -33,20 +24,24 @@ describe('Testing calcRowSpan.', () => {
     expect(calcRowSpan(findColByKey('c_price'))).toEqual([1, 1, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1]);
   });
 
-  it('the col data type is incorrect.', () => {
-    // @ts-ignore
-    expect(() => calcRowSpan({})).toThrow('calcRowSpan: data must be an array');
-
-    // @ts-ignore
-    expect(() => calcRowSpan(null)).toThrow('calcRowSpan: data must be an array');
-
-    // @ts-ignore
-    expect(() => calcRowSpan(1)).toThrow('calcRowSpan: data must be an array');
-  });
-
   it('the col data field type is incorrect.', () => {
     expect(calcRowSpan(findColByKey('discount'))).toEqual([2, 0, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1]);
     expect(calcRowSpan(findColByKey('payment'))).toEqual([1, 1, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1]);
+  });
+});
+
+describe('Testing calcRowsSpan.', () => {
+  createAllDataTypesData(['object']).forEach((data) => {
+    it(`the rows data type is ${getType(data)}.`, () => {
+      const consoleWarnSpy = createConsoleWarnSpy();
+
+      // @ts-ignore
+      const rowsSpan = calcRowsSpan([data]);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(WARNING_MESSAGES.ROW_TYPE_ERROR);
+
+      expect(rowsSpan).toEqual([]);
+    });
   });
 });
 
@@ -98,28 +93,29 @@ describe('Testing calcTableSpan.', () => {
 
   ['test', { mode: 'test' }].forEach((option) => {
     it(`options is ${JSON.stringify(option)}.`, () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn');
+      const consoleWarnSpy = createConsoleWarnSpy();
 
       // @ts-ignore
       const { rowsSpan, colsSpan } = calcTableSpan(table, option);
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(WARNING_MESSAGES.MODE_ERROR);
-      consoleWarnSpy.mockRestore();
 
       expect(rowsSpan).toEqual([]);
       expect(colsSpan).toEqual([]);
     });
   });
 
-  it('the table data type is incorrect.', () => {
-    // @ts-ignore
-    expect(() => calcTableSpan({})).toThrow('calcTableSpan: table must be an array');
+  createAllDataTypesData(['array']).forEach((data) => {
+    it(`the table data type is ${getType(data)}.`, () => {
+      const consoleWarnSpy = createConsoleWarnSpy();
 
-    // @ts-ignore
-    expect(() => calcTableSpan(null)).toThrow('calcTableSpan: table must be an array');
+      // @ts-ignore
+      const tableSpan = calcTableSpan(data);
 
-    // @ts-ignore
-    expect(() => calcTableSpan(1)).toThrow('calcTableSpan: table must be an array');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(WARNING_MESSAGES.TABLE_TYPE_ERROR);
+
+      expect(tableSpan).toEqual({ rowsSpan: [], colsSpan: [] });
+    });
   });
 });
 

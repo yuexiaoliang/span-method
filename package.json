@@ -11,6 +11,7 @@
   "devDependencies": {
     "@span-method/core": "workspace:*",
     "@span-method/mock": "workspace:*",
+    "@span-method/test-utils": "workspace:^",
     "@span-method/utils": "workspace:*",
     "@types/node": "^20.9.0",
     "@vitest/coverage-v8": "^0.34.6",
