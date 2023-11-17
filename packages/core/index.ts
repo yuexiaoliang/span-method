@@ -13,7 +13,10 @@ export type CelSpan = [rowSpan: number, colSpan: number];
 export const getCellSpanByTableSpan = (tableSpan: TableSpan, rowIndex: number, colIndex: number): CelSpan => {
   const { rowsSpan, colsSpan } = tableSpan;
 
-  return [rowsSpan[rowIndex][colIndex], colsSpan[colIndex][rowIndex]];
+  const rowSpan = rowsSpan?.[colIndex]?.[rowIndex] ?? 1;
+  const colSpan = colsSpan?.[rowIndex]?.[colIndex] ?? 1;
+
+  return [rowSpan, colSpan];
 };
 
 export const calcTableSpan = (table: Table) => {
@@ -28,11 +31,11 @@ export const calcTableSpan = (table: Table) => {
 };
 
 export const calcRowsSpan = (table: Table) => {
-  return table.map(calcColSpan);
+  return table[0] ? Object.keys(table[0]).map((key) => calcRowSpan(table.map((row) => row[key]))) : [];
 };
 
 export const calcColsSpan = (table: Table) => {
-  return table[0] ? Object.keys(table[0]).map((key) => calcRowSpan(table.map((row) => row[key]))) : [];
+  return table.map(calcColSpan);
 };
 
 // function used for calculating the colSpan of a row
