@@ -3,12 +3,12 @@ import { ref } from 'vue';
 import { createTableByRange, getColumnsByRow } from '@span-method/mock';
 import { ElTable, ElTableColumn } from 'element-plus';
 import defineSpanMethod from '@span-method/element-plus';
-import type { SpanMethod } from '@span-method/element-plus';
+import type { ElementPlusSpanMethodProp } from '@span-method/element-plus';
 
 
 interface Section {
   title: string;
-  spanMethod?: () => SpanMethod;
+  spanMethod?: () => ElementPlusSpanMethodProp;
 }
 
 const data = createTableByRange({
